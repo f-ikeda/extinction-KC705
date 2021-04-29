@@ -24,7 +24,10 @@ void Ana_kc(string fin){
 
   TH1D *mppc_chHist = new TH1D("mppc_chHist","ch (mppc)",65,-0.5,64.5);
   TH1D *pmt_chHist = new TH1D("pmt_chHist","ch (pmt)",16,-0.5,15.5);
-  
+  TH2D *hit_map = new TH2D("hit_map","hit map(extinction detector)",70,-35.5,34.5,6,-12,12);
+  hit_map -> SetStats(0);
+  TH2D *hodo_hit_map = new TH2D("hodo_hit_map","hit map(hodo scope)", 20,-20.5,19.5,3,-6,6);
+  hodo_hit_map -> SetStats(0);
   TH1D *mppc_TDC_P3[mppcChNum];
   TH1D *mppc_TDC_MR[mppcChNum];
   for(int i=0; i<mppcChNum; ++i){
@@ -138,10 +141,57 @@ void Ana_kc(string fin){
     }
   }
   inputFile->Close();
+  
 
+  //--- mppc hit map ---//
+  hit_map->Draw("colz");
+  for(int i=0; i<5; i++){
+    TLine *lh;
+    if(i==1 || i==3){
+      lh = new TLine(-28.5, -8+4*i, 27.5, -8+4*i);
+    }
+    else{
+      lh = new TLine(-32.5, -8+4*i, 31.5, -8+4*i);
+    }
+    lh->SetLineWidth(1);
+    lh->Draw();
+  }
+  for(int i=0; i<57; i++){
+    TLine *lh;
+    if(i%7 == 0){
+      lh = new TLine(-28.5+i, -8, -28.5+i, 8);
+    }
+    else{
+      lh = new TLine(-28.5+i, -4, -28.5+i, 4);
+    }
+    lh->SetLineWidth(1);
+    lh->Draw();
+  }
+  TLine *lh1 = new TLine(-32.5,-8,-32.5,8);
+  lh1->SetLineWidth(1);
+  lh1->Draw();
+  TLine *lh2 = new TLine(31.5,-8,31.5,8);
+  lh2->SetLineWidth(1);
+  lh2->Draw();
+  c1 -> Print(Name,"pdf");
 
+  //--- hodo hit map ---//
+  hodo_hit_map -> Draw("colz");
+  for(int i=0; i<17; i++){
+    TLine *lh = new TLine(-16.5+2*i,2,-16.5+2*i,-2);
+    lh->SetLineWidth(1);
+    lh->Draw();
+  }
+  TLine *lh3 = new TLine(-16.5,-2,15.5,-2);
+  lh3->SetLineWidth(1);
+  lh3->Draw();
+  TLine *lh4 = new TLine(-16.5,2,15.5,2);
+  lh4->SetLineWidth(1);
+  lh4->Draw();
+
+  c1 -> Print(Name,"pdf");
   //gPad->SetLogz();
-  c1 -> SetLogz();
+  //c1 -> SetLogz();
   gStyle->SetOptStat("ne");
   //n:ヒストグラム名、e:entry数を表示
 
@@ -151,13 +201,14 @@ void Ana_kc(string fin){
   c1 -> SetLogy();
   mppc_chHist -> Draw();
   c1 -> Print(Name,"pdf");
+  pmt_chHist -> Draw();
+  c1 -> Print(Name,"pdf");
   for(int i=0; i<mppcChNum; ++i){
     mppc_TDC_P3[i] -> Draw();
     c1 -> Print(Name,"pdf");
     mppc_TDC_MR[i] -> Draw();
     c1 -> Print(Name,"pdf");
   }
-
   pmt_chHist -> Draw();
   c1 -> Print(Name,"pdf");
   for(int i=0; i<pmtChNum; ++i){
@@ -167,6 +218,7 @@ void Ana_kc(string fin){
     c1 -> Print(Name,"pdf");
   }
 
+  
   /* Int_t projecCh = 0; */
   /* TH1D *projecChH = timeDiffMapH->ProjectionY("projecCh histo", projecCh + 1, projecCh + 1); */
   /* projecChH->Draw(); */
